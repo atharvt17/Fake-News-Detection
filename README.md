@@ -39,6 +39,7 @@ To run this web application locally, you need to have the following dependencies
 - Django
 - joblib
 - scikit-learn
+- nltk
 
 You can install these dependencies by running the following command:
 
