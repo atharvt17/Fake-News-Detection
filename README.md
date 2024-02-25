@@ -36,9 +36,9 @@ fake_news_detection_project/
 
 To run this web application locally, you need to have the following dependencies installed:
 
-- Django==3.2.10
-- joblib==1.1.0
-- scikit-learn==0.24.2
+- Django
+- joblib
+- scikit-learn
 
 You can install these dependencies by running the following command:
 
