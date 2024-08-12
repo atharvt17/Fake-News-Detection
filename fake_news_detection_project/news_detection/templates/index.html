@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fake News Detection</title>
+  <style>
+    /* Overall design */
+    body {
+      background-color: #f5f5f5; /* Light background */
+      font-family: "Open Sans", sans-serif; /* Modern font */
+      margin: 0;
+      padding: 20px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 20px;
+      background-color: #343a40; /* Dark blue header */
+      color: white;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    nav {
+      display: flex;
+    }
+
+    nav a {
+      color: white;
+      text-decoration: none;
+      padding: 10px 15px;
+    }
+
+    nav a:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Main content */
+    main {
+      margin-top: 40px;
+    }
+
+    .main-text {
+      text-align: center;
+      font-size: 18px;
+      margin: 20px 0;
+    }
+
+    .news-input {
+      display: block;
+      width: 60%;
+      height: 200px;
+      margin: 10px auto;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 16px;
+      text-align: center;
+      resize: both;
+    }
+
+    /* Button */
+    .analyze-button {
+      display: block;
+      width: 180px;
+      height: 40px;
+      margin: 20px auto;
+      padding: 10px;
+      border: none;
+      border-radius: 5px;
+      background-color: #28a745; /* Green button */
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* Responsiveness */
+    @media (max-width: 768px) {
+      nav {
+        flex-direction: column;
+      }
+
+      nav a {
+        margin-bottom: 10px;
+      }
+    }
+    /* Footer section */
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #050505;
+    }
+
+    .footer-text {
+      margin-bottom: 10px;
+    }
+    .prediction {
+      display: none; /* Initially hide the prediction area */
+      margin: 10px auto;
+      width: 60%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      text-align: center;
+      background-color: rgba(255, 255, 255, 0.9); /* Light background */
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .prediction.active { /* Show prediction area after button click */
+      display: block;
+    }
+    .error-message {
+      color: red;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+    <header>
+      <div class="logo">Fake News Detector</div>
+      <nav>
+        <a href="https://github.com/atharvt17/Fake-News-Detection" target="_blank">Source Code</a>
+        <a href="https://www.linkedin.com/in/atharva-tripathi" target="_blank">LinkedIn</a>
+      </nav>
+    </header>
+    <main>
+      <p class="main-text">Analyze news articles to see if they are fake or real.</p>
+      <textarea class="news-input" name="news_content" placeholder="Paste or type the news content here"></textarea>
+      <button type="submit" class="analyze-button">Analyze Article</button>
+      <p class="prediction">Prediction: {{ prediction }}</p>
+  </main>
+    <footer>
+      <p class="footer-text">Made with love &#128150; by <a href="https://github.com/atharvt17" target="_blank">Atharva Tripathi</a></p>
+    </footer>
+  
+    <script>
+      const button = document.querySelector('.analyze-button');
+      const prediction = document.querySelector('.prediction');
+      const errorMessage = document.createElement('p');
+      errorMessage.classList.add('error-message');
+  
+      button.addEventListener('click', () => {
+          const newsInput = document.querySelector('.news-input');
+          const textContent = newsInput.value.trim();
+  
+          // Check if text field is empty
+          if (!textContent) {
+              prediction.classList.remove('active'); // Hide previous prediction
+              errorMessage.textContent = 'Please enter some text to analyze.';
+              newsInput.after(errorMessage); // Display error message below input
+              return;
+          }
+  
+          // Remove error message if previously displayed
+          errorMessage.remove();
+  
+          // Show loading message
+          prediction.classList.add('active');
+          prediction.textContent = 'Loading...';
+  
+          // Make AJAX request to backend
+          fetch('/analyze_article/', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRFToken': '{{ csrf_token }}' // Include CSRF token for security
+              },
+              body: JSON.stringify({ news_content: textContent })
+          })
+          .then(response => response.json())
+          .then(data => {
+              // Update prediction with actual result
+              prediction.textContent = `Prediction: ${data.prediction}`;
+          })
+          .catch(error => {
+              console.error('Error:', error);
+              // Update prediction with error message
+              prediction.textContent = 'An error occurred while analyzing the article.';
+          });
+      });
+  </script>
+  
+  </body>
+  </html>
